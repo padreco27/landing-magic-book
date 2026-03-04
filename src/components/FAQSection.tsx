@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     question: "Vocês fazem entregas?",
-    answer: "Sim! Fazemos entregas em Paraopeba e região. O valor da entrega varia conforme a distância. Consulte-nos pelo WhatsApp para mais detalhes.",
+    answer: "No momento não realizamos entregas. A retirada dos produtos é feita em nosso endereço na Av. Francisco Simões, 259 — Paraopeba/MG. Combine o horário de retirada pelo WhatsApp!",
   },
   {
     question: "Quais sabores de brigadeiro estão disponíveis?",

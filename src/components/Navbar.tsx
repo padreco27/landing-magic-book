@@ -3,9 +3,11 @@ import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
+  { label: "Sobre", href: "#sobre" },
   { label: "Produtos", href: "#produtos" },
+  { label: "Galeria", href: "#galeria" },
   { label: "Orçamento", href: "#orcamento" },
-  { label: "Agendamento", href: "#agendamento" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contato", href: "#contato" },
 ];
 

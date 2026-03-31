@@ -14,6 +14,58 @@ const ScheduleSection = () => {
     toast.success("Redirecionando para o WhatsApp!");
   };
 
+  const handleCreateStoreCalendarEvent = async () => {
+    if (!form.name || !form.date || !form.time || !form.product) {
+      toast.error("Preencha nome, data, horário e produto.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/calendar/event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Erro ao criar evento");
+      }
+      const data = await res.json();
+      toast.success("Evento criado no calendário da loja");
+      if (data?.htmlLink) {
+        window.location.href = data.htmlLink;
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Falha ao criar evento";
+      toast.error(message);
+    }
+  };
+
+  const handleAddToGoogleCalendar = () => {
+    if (!form.name || !form.date || !form.time || !form.product) {
+      toast.error("Preencha nome, data, horário e produto.");
+      return;
+    }
+    const [year, month, day] = form.date.split("-").map((v) => parseInt(v, 10));
+    const [hour, minute] = form.time.split(":").map((v) => parseInt(v, 10));
+    if (!year || !month || !day || hour === undefined || minute === undefined) {
+      toast.error("Data ou horário inválidos.");
+      return;
+    }
+    const start = new Date(year, month - 1, day, hour, minute, 0);
+    const end = new Date(start.getTime() + 60 * 60 * 1000);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const fmt = (d: Date) =>
+      `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+    const dates = `${fmt(start)}/${fmt(end)}`;
+    const title = encodeURIComponent(`Encomenda: ${form.product}`);
+    const details = encodeURIComponent(
+      `Nome: ${form.name}\nProduto: ${form.product}\nObservações: ${form.notes || "-"}\nAgendado via site`
+    );
+    const ctz = encodeURIComponent("America/Sao_Paulo");
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dates}&ctz=${ctz}`;
+    window.location.href = url;
+  };
+
   return (
     <section id="agendamento" className="py-20 px-4 bg-secondary">
       <div className="max-w-2xl mx-auto">
@@ -97,12 +149,28 @@ const ScheduleSection = () => {
               placeholder="Tema, sabor, quantidade..."
             />
           </div>
-          <button
-            type="submit"
-            className="w-full py-3 bg-primary text-primary-foreground rounded-full font-body font-bold hover:opacity-90 transition-opacity shadow-md text-lg"
-          >
-            📅 Agendar via WhatsApp
-          </button>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <button
+              type="submit"
+              className="w-full py-3 bg-primary text-primary-foreground rounded-full font-body font-bold hover:opacity-90 transition-opacity shadow-md text-lg"
+            >
+              📱 Agendar via WhatsApp
+            </button>
+            <button
+              type="button"
+              onClick={handleAddToGoogleCalendar}
+              className="w-full py-3 bg-emerald-600 text-white rounded-full font-body font-bold hover:opacity-90 transition-opacity shadow-md text-lg"
+            >
+              🗓️ Adicionar ao Google Calendar
+            </button>
+            <button
+              type="button"
+              onClick={handleCreateStoreCalendarEvent}
+              className="w-full py-3 bg-amber-600 text-white rounded-full font-body font-bold hover:opacity-90 transition-opacity shadow-md text-lg sm:col-span-2"
+            >
+              🏪 Criar evento no calendário da loja
+            </button>
+          </div>
         </motion.form>
       </div>
     </section>

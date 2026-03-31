@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import cakeImg from "@/assets/cake.jpg";
-import brigadeirosImg from "@/assets/brigadeiros.jpg";
-import cupcakesImg from "@/assets/cupcakes.jpg";
+import cakeImg from "@/assets/instagram/imgi_29_503611200_1511498769814232_4905489789673070905_n.jpg";
+import brigadeirosImg from "@/assets/instagram/imgi_20_542245137_18363017206159379_5416424997447875745_n.jpg";
+import cupcakesImg from "@/assets/instagram/imgi_30_439864236_18304731517159379_1689220520165347747_n.jpg";
 
 const products = [
   { name: "Bolos Decorados", description: "Bolos artesanais personalizados para todas as ocasiões", image: cakeImg },

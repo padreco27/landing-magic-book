@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import heroImage from "@/assets/hero-sweets.jpg";
+import heroImage from "@/assets/instagram/imgi_28_503323229_1053078972846067_7423997360229693187_n.jpg";
 import logo from "@/assets/logo.png";
 
 const HeroSection = () => {

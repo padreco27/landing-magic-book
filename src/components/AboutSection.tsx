@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Heart, Sparkles, Clock } from "lucide-react";
 import logo from "@/assets/logo.png";
+import aboutImg from "@/assets/instagram/imgi_25_504215333_1209145811008369_9220896123054440032_n.jpg";
 
 const values = [
   { icon: Heart, title: "Feito com Amor", desc: "Cada receita carrega carinho e dedicação em cada detalhe" },
@@ -62,7 +63,7 @@ const AboutSection = () => {
           >
             <div className="relative">
               <div className="w-72 h-72 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl">
-                <img src={logo} alt="Lado Doce Gourmet" className="w-full h-full object-cover" />
+                <img src={aboutImg} alt="Lado Doce Gourmet" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-primary text-primary-foreground px-5 py-2 rounded-full font-body font-bold text-sm shadow-lg">
                 🍫 Desde 2020

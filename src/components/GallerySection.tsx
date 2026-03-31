@@ -1,17 +1,19 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import cakeImg from "@/assets/cake.jpg";
-import brigadeirosImg from "@/assets/brigadeiros.jpg";
-import cupcakesImg from "@/assets/cupcakes.jpg";
-import heroImg from "@/assets/hero-sweets.jpg";
+import img1 from "@/assets/instagram/imgi_28_503323229_1053078972846067_7423997360229693187_n.jpg";
+import img2 from "@/assets/instagram/imgi_29_503611200_1511498769814232_4905489789673070905_n.jpg";
+import img3 from "@/assets/instagram/imgi_24_504563003_693493286910064_3148865833511427933_n.jpg";
+import img4 from "@/assets/instagram/imgi_20_542245137_18363017206159379_5416424997447875745_n.jpg";
+import img5 from "@/assets/instagram/imgi_26_505483050_2223716784750357_7486484373818195671_n.jpg";
+import img6 from "@/assets/instagram/imgi_27_503873928_699020322774057_2186961996005862800_n.jpg";
 
 const galleryItems = [
-  { src: cakeImg, alt: "Bolo decorado artesanal", label: "Bolo Decorado" },
-  { src: brigadeirosImg, alt: "Brigadeiros gourmet variados", label: "Brigadeiros" },
-  { src: cupcakesImg, alt: "Cupcakes decorados", label: "Cupcakes" },
-  { src: heroImg, alt: "Mesa de doces para festa", label: "Mesa de Doces" },
-  { src: cakeImg, alt: "Bolo temático personalizado", label: "Bolo Temático" },
-  { src: brigadeirosImg, alt: "Kit festa com brigadeiros", label: "Kit Festa" },
+  { src: img1, alt: "Doce artesanal", label: "Artesanal" },
+  { src: img2, alt: "Doce gourmet", label: "Gourmet" },
+  { src: img3, alt: "Bolo decorado", label: "Bolo Decorado" },
+  { src: img4, alt: "Delícia Lado Doce", label: "Delícia" },
+  { src: img5, alt: "Kit Festa", label: "Kit Festa" },
+  { src: img6, alt: "Encomenda especial", label: "Encomenda" },
 ];
 
 const GallerySection = () => {

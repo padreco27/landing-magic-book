@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Menu, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { ThemeToggle } from "./ThemeToggle";
+import { CartDrawer } from "./CartDrawer";
 
 const links = [
   { label: "Sobre", href: "#sobre" },
@@ -31,6 +33,8 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <CartDrawer />
           <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors" title="Área Administrativa">
             <Settings size={18} />
           </Link>

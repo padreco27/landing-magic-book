@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,61 +6,70 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 import { supabase } from "@/lib/supabase";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate("/admin/dashboard");
+    });
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("admin_users")
-        .select("*")
-        .eq("username", username)
-        .eq("password", password)
-        .single();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (error || !data) throw new Error("Usuário ou senha incorretos");
+      if (error) throw new Error("Credenciais inválidas");
+      if (!data.session) throw new Error("Não foi possível iniciar a sessão");
       
-      localStorage.setItem("admin_token", "simple_token_for_now");
       toast.success("Login realizado com sucesso!");
       navigate("/admin/dashboard");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao fazer login");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao fazer login");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-pink-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-secondary p-4 relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <Card className="w-full max-w-md bg-card shadow-lg">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
-            <Lock className="w-6 h-6 text-pink-600" />
+          <div className="mx-auto mb-4 w-12 h-12 bg-pink-100 dark:bg-pink-900/40 rounded-full flex items-center justify-center shadow-sm">
+            <Lock className="w-6 h-6 text-pink-600 dark:text-pink-400" />
           </div>
-          <CardTitle className="text-2xl font-bold text-pink-800">
+          <CardTitle className="text-2xl font-bold text-foreground">
             Área Administrativa
           </CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            Faça login para acessar o painel de controle
+          <p className="text-sm text-muted-foreground mt-1 font-body">
+            Entre com suas credenciais seguras
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Usuário</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Digite seu usuário"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seuemail@exemplo.com"
                 required
               />
             </div>
@@ -71,28 +80,28 @@ const AdminLogin = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Digite sua senha"
+                placeholder="Sua senha secreta"
                 required
               />
             </div>
             <Button
               type="submit"
-              className="w-full bg-pink-600 hover:bg-pink-700"
+              className="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold shadow-md"
               disabled={loading}
             >
-              {loading ? "Entrando..." : "Entrar"}
+              {loading ? "Entrando..." : "Entrar de forma segura"}
             </Button>
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full shadow-sm"
               onClick={() => navigate("/")}
             >
               Voltar ao Site Inicial
             </Button>
             <div className="text-center pt-2">
               <p className="text-xs text-muted-foreground">
-                Novos administradores só podem ser criados por dentro do painel por motivos de segurança.
+                Protegido por Supabase Auth
               </p>
             </div>
           </form>

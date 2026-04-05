@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseEnvStatus } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,7 +98,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!supabase) {
       toast.error(
-        "Supabase não está configurado. Verifique VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY ou VITE_SUPABASE_ANON_KEY."
+        `Supabase não está configurado. Verifique as variáveis de ambiente. status: URL=${supabaseEnvStatus.supabaseUrl} publishable=${supabaseEnvStatus.supabasePublishableKey} anon=${supabaseEnvStatus.supabaseAnonKey}`
       );
       setLoading(false);
       navigate("/admin");

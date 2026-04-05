@@ -1,25 +1,29 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabaseKey =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  import.meta.env.VITE_SUPABASE_KEY;
+  supabasePublishableKey || supabaseAnonKey || import.meta.env.VITE_SUPABASE_KEY;
+
+export const supabaseEnvStatus = {
+  supabaseUrl: Boolean(supabaseUrl),
+  supabasePublishableKey: Boolean(supabasePublishableKey),
+  supabaseAnonKey: Boolean(supabaseAnonKey),
+  supabaseKey: Boolean(supabaseKey),
+  keySource: supabasePublishableKey
+    ? "VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY"
+    : supabaseAnonKey
+    ? "VITE_SUPABASE_ANON_KEY"
+    : import.meta.env.VITE_SUPABASE_KEY
+    ? "VITE_SUPABASE_KEY"
+    : "none",
+};
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey);
 
 if (import.meta.env.DEV) {
-  console.debug("Supabase env status:", {
-    supabaseUrl: Boolean(supabaseUrl),
-    supabaseKey: Boolean(supabaseKey),
-    keySource: import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-      ? "PUBLISHABLE_DEFAULT_KEY"
-      : import.meta.env.VITE_SUPABASE_ANON_KEY
-      ? "ANON_KEY"
-      : import.meta.env.VITE_SUPABASE_KEY
-      ? "KEY"
-      : "none",
-  });
+  console.debug("Supabase env status:", supabaseEnvStatus);
 }
 
 export const supabase: SupabaseClient | null =

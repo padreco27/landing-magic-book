@@ -8,7 +8,7 @@ import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseEnvStatus } from "@/lib/supabase";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const AdminLogin = () => {
 
     if (!supabase) {
       toast.error(
-        "Supabase não está configurado. Verifique VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY ou VITE_SUPABASE_ANON_KEY."
+        `Supabase não está configurado. Verifique as variáveis de ambiente. status: URL=${supabaseEnvStatus.supabaseUrl} publishable=${supabaseEnvStatus.supabasePublishableKey} anon=${supabaseEnvStatus.supabaseAnonKey}`
       );
       return;
     }

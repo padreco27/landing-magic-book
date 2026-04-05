@@ -39,7 +39,9 @@ const AdminLogin = () => {
     e.preventDefault();
 
     if (!supabase) {
-      toast.error("Supabase não está configurado. Verifique as variáveis de ambiente.");
+      toast.error(
+        "Supabase não está configurado. Verifique VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY ou VITE_SUPABASE_ANON_KEY."
+      );
       return;
     }
 

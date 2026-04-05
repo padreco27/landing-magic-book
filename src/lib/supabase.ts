@@ -1,8 +1,8 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jztmuskbsjvcayksxojt.supabase.co';
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 'sb_publishable_ittsq3gcRmfO-jP8USOobw_1FxiClJV';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ittsq3gcRmfO-jP8USOobw_1FxiClJV';
 const supabaseKey =
   supabasePublishableKey || supabaseAnonKey || import.meta.env.VITE_SUPABASE_KEY;
 
@@ -17,7 +17,8 @@ export const supabaseEnvStatus = {
     ? "VITE_SUPABASE_ANON_KEY"
     : import.meta.env.VITE_SUPABASE_KEY
     ? "VITE_SUPABASE_KEY"
-    : "none",
+    : "HARDCODED_FALLBACK",
+  usingFallback: !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 };
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey);

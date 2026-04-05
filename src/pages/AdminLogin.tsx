@@ -40,7 +40,7 @@ const AdminLogin = () => {
 
     if (!supabase) {
       toast.error(
-        `Supabase não está configurado. Verifique as variáveis de ambiente. status: URL=${supabaseEnvStatus.supabaseUrl} publishable=${supabaseEnvStatus.supabasePublishableKey} anon=${supabaseEnvStatus.supabaseAnonKey}`
+        `Supabase não está configurado. ${supabaseEnvStatus.usingFallback ? 'Usando configuração hardcoded temporária.' : 'Verifique as variáveis de ambiente.'} status: URL=${supabaseEnvStatus.supabaseUrl} publishable=${supabaseEnvStatus.supabasePublishableKey} anon=${supabaseEnvStatus.supabaseAnonKey}`
       );
       return;
     }

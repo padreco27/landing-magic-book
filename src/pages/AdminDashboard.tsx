@@ -60,17 +60,6 @@ const AdminDashboard = () => {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  const isAdminUser = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("admin_profiles")
-      .select("id")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (error) throw error;
-    return Boolean(data);
-  };
-
   const fetchProducts = async () => {
     if (!supabase) {
       setProducts([]);
@@ -111,21 +100,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      try {
-        const adminAllowed = await isAdminUser(session.user.id);
-        if (!adminAllowed) {
-          await supabase.auth.signOut();
-          toast.error("Acesso negado. Conta sem permissão administrativa. Execute o SQL no Supabase para adicionar: INSERT INTO public.admin_profiles (user_id, role) SELECT id, 'admin' FROM auth.users WHERE email = 'SEU_EMAIL_AQUI';");
-          navigate("/admin");
-          return;
-        }
-
-        fetchProducts();
-      } catch (err: any) {
-        console.error(err);
-        toast.error("Erro ao validar permissão administrativa");
-        navigate("/admin");
-      }
+      fetchProducts();
     });
 
     const {

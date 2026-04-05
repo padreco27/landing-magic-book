@@ -16,17 +16,6 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isAdminUser = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("admin_profiles")
-      .select("id")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (error) throw error;
-    return Boolean(data);
-  };
-
   useEffect(() => {
     if (!supabase) return;
 
@@ -56,12 +45,6 @@ const AdminLogin = () => {
 
       const userId = data.user?.id ?? data.session?.user?.id;
       if (!userId) throw new Error("Não foi possível iniciar a sessão");
-
-      const adminAllowed = await isAdminUser(userId);
-      if (!adminAllowed) {
-        await supabase.auth.signOut();
-        throw new Error("Acesso negado. Conta não cadastrada como administrador. Execute o SQL no Supabase para adicionar: INSERT INTO public.admin_profiles (user_id, role) SELECT id, 'admin' FROM auth.users WHERE email = 'SEU_EMAIL_AQUI';");
-      }
 
       toast.success("Login realizado com sucesso!");
       navigate("/admin/dashboard");

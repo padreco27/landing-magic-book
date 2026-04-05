@@ -16,6 +16,17 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const isAdminUser = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("admin_profiles")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return Boolean(data);
+  };
+
   useEffect(() => {
     if (!supabase) return;
 
@@ -40,8 +51,16 @@ const AdminLogin = () => {
       });
 
       if (error) throw new Error("Credenciais inválidas");
-      if (!data.session) throw new Error("Não foi possível iniciar a sessão");
-      
+
+      const userId = data.user?.id ?? data.session?.user?.id;
+      if (!userId) throw new Error("Não foi possível iniciar a sessão");
+
+      const adminAllowed = await isAdminUser(userId);
+      if (!adminAllowed) {
+        await supabase.auth.signOut();
+        throw new Error("Acesso negado. Usuário não cadastrado como administrador.");
+      }
+
       toast.success("Login realizado com sucesso!");
       navigate("/admin/dashboard");
     } catch (err: any) {

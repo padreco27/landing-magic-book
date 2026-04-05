@@ -60,6 +60,17 @@ const AdminDashboard = () => {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
+  const isAdminUser = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("admin_profiles")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return Boolean(data);
+  };
+
   const fetchProducts = async () => {
     if (!supabase) {
       setProducts([]);
@@ -92,11 +103,26 @@ const AdminDashboard = () => {
       return;
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) {
         navigate("/admin");
-      } else {
+        return;
+      }
+
+      try {
+        const adminAllowed = await isAdminUser(session.user.id);
+        if (!adminAllowed) {
+          await supabase.auth.signOut();
+          toast.error("Acesso negado. Conta sem permissão administrativa.");
+          navigate("/admin");
+          return;
+        }
+
         fetchProducts();
+      } catch (err: any) {
+        console.error(err);
+        toast.error("Erro ao validar permissão administrativa");
+        navigate("/admin");
       }
     });
 

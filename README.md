@@ -4,6 +4,20 @@
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
+## Setup do Sistema Administrativo
+
+Este projeto usa Supabase Auth para autenticação administrativa. Para configurar administradores:
+
+1. **Configure as variáveis de ambiente** no arquivo `.env`:
+   ```
+   VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sua-chave-publica
+   ```
+
+2. **Execute o SQL base** em `supabase_auth_admin.sql` no Supabase SQL Editor
+
+3. **Adicione administradores** seguindo as instruções em `ADMIN_SETUP.md`
+
 ## How can I edit this code?
 
 There are several ways of editing your application.

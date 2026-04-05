@@ -115,7 +115,7 @@ const AdminDashboard = () => {
         const adminAllowed = await isAdminUser(session.user.id);
         if (!adminAllowed) {
           await supabase.auth.signOut();
-          toast.error("Acesso negado. Conta sem permissão administrativa.");
+          toast.error("Acesso negado. Conta sem permissão administrativa. Execute o SQL no Supabase para adicionar: INSERT INTO public.admin_profiles (user_id, role) SELECT id, 'admin' FROM auth.users WHERE email = 'SEU_EMAIL_AQUI';");
           navigate("/admin");
           return;
         }

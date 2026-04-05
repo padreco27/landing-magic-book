@@ -60,7 +60,7 @@ const AdminLogin = () => {
       const adminAllowed = await isAdminUser(userId);
       if (!adminAllowed) {
         await supabase.auth.signOut();
-        throw new Error("Acesso negado. Usuário não cadastrado como administrador.");
+        throw new Error("Acesso negado. Conta não cadastrada como administrador. Execute o SQL no Supabase para adicionar: INSERT INTO public.admin_profiles (user_id, role) SELECT id, 'admin' FROM auth.users WHERE email = 'SEU_EMAIL_AQUI';");
       }
 
       toast.success("Login realizado com sucesso!");

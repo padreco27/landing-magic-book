@@ -6,16 +6,17 @@ create table if not exists public.admin_profiles (
   created_at timestamp with time zone default timezone('utc', now()) not null
 );
 
--- Insere o administrador padrão usando o e-mail que já existe no Supabase Auth.
--- Substitua pelo e-mail real do administrador criado no Supabase Auth.
-insert into public.admin_profiles (user_id, role)
-select id, 'admin'
-from auth.users
-where email = 'felipeglacerdaa@hotmail.com'
-on conflict (user_id) do nothing;
+-- (IMPORTANTE) Execute este comando MANUALMENTE no Supabase SQL Editor para adicionar administradores:
+-- INSERT INTO public.admin_profiles (user_id, role)
+-- SELECT id, 'admin' FROM auth.users WHERE email = 'SEU_EMAIL_AQUI';
+-- Substitua 'SEU_EMAIL_AQUI' pelo email do usuário que deve ser administrador
 
 -- Habilita Row Level Security em produtos para obrigar autenticação/role de administrador
 alter table public.products enable row level security;
+
+-- Remove policies existentes se houver
+drop policy if exists "Admins can manage products" on public.products;
+drop policy if exists "Allow all actions on products" on public.products;
 
 create policy "Admins can manage products" on public.products
   for all
@@ -34,6 +35,12 @@ create policy "Admins can manage products" on public.products
 
 -- Habilita RLS em admin_profiles para permitir somente acesso próprio
 alter table public.admin_profiles enable row level security;
+
+-- Remove policies existentes se houver
+drop policy if exists "Admins can read own profile" on public.admin_profiles;
+drop policy if exists "Admins can manage own profile" on public.admin_profiles;
+drop policy if exists "Admins can delete own profile" on public.admin_profiles;
+drop policy if exists "Allow all actions on admin_users" on public.admin_users;
 
 create policy "Admins can read own profile" on public.admin_profiles
   for select

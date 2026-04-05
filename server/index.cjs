@@ -106,6 +106,175 @@ app.post("/api/calendar/event", async (req, res) => {
   }
 });
 
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
+
+const JWT_SECRET = process.env.JWT_SECRET || "confeitaria_secret_key_change_me";
+const ADMIN_USER = process.env.ADMIN_USER || "admin";
+const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
+const PRODUCTS_FILE = path.join(__dirname, "products.json");
+const USERS_FILE = path.join(__dirname, "users.json");
+
+function loadUsers() {
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      return JSON.parse(fs.readFileSync(USERS_FILE, "utf-8"));
+    }
+  } catch (e) {
+    console.error("Erro ao carregar usuários:", e);
+  }
+  return [];
+}
+
+function saveUsers(users) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+}
+
+function initializeDefaultAdmin() {
+  let users = loadUsers();
+  if (users.length === 0) {
+    users.push({
+      id: "default_admin_id",
+      username: ADMIN_USER,
+      password: ADMIN_PASS,
+      createdAt: new Date().toISOString()
+    });
+    saveUsers(users);
+  }
+}
+initializeDefaultAdmin();
+
+
+function loadProducts() {
+  try {
+    if (fs.existsSync(PRODUCTS_FILE)) {
+      return JSON.parse(fs.readFileSync(PRODUCTS_FILE, "utf-8"));
+    }
+  } catch (e) {
+    console.error("Erro ao carregar produtos:", e);
+  }
+  return [];
+}
+
+function saveProducts(products) {
+  fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2));
+}
+
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Token não fornecido" });
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ error: "Token inválido" });
+  }
+}
+
+app.post("/api/admin/login", (req, res) => {
+  const { username, password } = req.body || {};
+  const users = loadUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if (user) {
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "8h" });
+    return res.json({ token });
+  }
+  
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "8h" });
+    return res.json({ token });
+  }
+  
+  return res.status(401).json({ error: "Credenciais inválidas" });
+});
+
+app.get("/api/admin/users", authMiddleware, (_req, res) => {
+  const users = loadUsers().map(u => ({ id: u.id, username: u.username, createdAt: u.createdAt }));
+  res.json(users);
+});
+
+app.post("/api/admin/users", authMiddleware, (req, res) => {
+  const users = loadUsers();
+  const { username, password } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ error: "Usuário e senha são obrigatórios" });
+  }
+  if (users.find(u => u.username === username)) {
+    return res.status(400).json({ error: "Nome de usuário já existe" });
+  }
+  const newUser = {
+    id: Date.now().toString(),
+    username,
+    password,
+    createdAt: new Date().toISOString(),
+  };
+  users.push(newUser);
+  saveUsers(users);
+  res.status(201).json({ id: newUser.id, username: newUser.username, createdAt: newUser.createdAt });
+});
+
+app.delete("/api/admin/users/:id", authMiddleware, (req, res) => {
+  let users = loadUsers();
+  const idx = users.findIndex((u) => u.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Usuário não encontrado" });
+  if (users.length === 1) return res.status(400).json({ error: "Não é possível excluir o único administrador do sistema." });
+  
+  const removed = users.splice(idx, 1)[0];
+  saveUsers(users);
+  res.json({ id: removed.id, username: removed.username });
+});
+
+app.get("/api/admin/products", authMiddleware, (_req, res) => {
+  res.json(loadProducts());
+});
+
+app.post("/api/admin/products", authMiddleware, (req, res) => {
+  const products = loadProducts();
+  const { name, description, price, quantity, category } = req.body || {};
+  if (!name || price === undefined) {
+    return res.status(400).json({ error: "Nome e preço são obrigatórios" });
+  }
+  const product = {
+    id: Date.now().toString(),
+    name,
+    description: description || "",
+    price: Number(price),
+    quantity: Number(quantity) || 0,
+    category: category || "Geral",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  products.push(product);
+  saveProducts(products);
+  res.status(201).json(product);
+});
+
+app.put("/api/admin/products/:id", authMiddleware, (req, res) => {
+  const products = loadProducts();
+  const idx = products.findIndex((p) => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Produto não encontrado" });
+  const { name, description, price, quantity, category } = req.body || {};
+  if (name !== undefined) products[idx].name = name;
+  if (description !== undefined) products[idx].description = description;
+  if (price !== undefined) products[idx].price = Number(price);
+  if (quantity !== undefined) products[idx].quantity = Number(quantity);
+  if (category !== undefined) products[idx].category = category;
+  products[idx].updatedAt = new Date().toISOString();
+  saveProducts(products);
+  res.json(products[idx]);
+});
+
+app.delete("/api/admin/products/:id", authMiddleware, (req, res) => {
+  let products = loadProducts();
+  const idx = products.findIndex((p) => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Produto não encontrado" });
+  const removed = products.splice(idx, 1)[0];
+  saveProducts(products);
+  res.json(removed);
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`API do Calendar rodando em http://localhost:${PORT}`);

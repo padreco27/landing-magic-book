@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const links = [
   { label: "Sobre", href: "#sobre" },
@@ -29,9 +30,14 @@ const Navbar = () => {
           ))}
         </div>
 
-        <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors" title="Área Administrativa">
+            <Settings size={18} />
+          </Link>
+          <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>

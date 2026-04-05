@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+  import { motion } from "framer-motion";
 import { useState } from "react";
 import img1 from "@/assets/instagram/imgi_28_503323229_1053078972846067_7423997360229693187_n.jpg";
 import img2 from "@/assets/instagram/imgi_29_503611200_1511498769814232_4905489789673070905_n.jpg";

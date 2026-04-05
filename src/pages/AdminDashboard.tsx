@@ -61,6 +61,12 @@ const AdminDashboard = () => {
   const [saving, setSaving] = useState(false);
 
   const fetchProducts = async () => {
+    if (!supabase) {
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.from("products").select("*").order("created_at", { ascending: false });
       if (error) throw error;
@@ -79,6 +85,13 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
+    if (!supabase) {
+      toast.error("Supabase não está configurado. Verifique as variáveis de ambiente.");
+      setLoading(false);
+      navigate("/admin");
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate("/admin");

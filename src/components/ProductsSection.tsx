@@ -24,6 +24,13 @@ const ProductsSection = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      if (!supabase) {
+        console.warn("Supabase não configurado. Pulando carregamento de produtos.");
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from("products")
